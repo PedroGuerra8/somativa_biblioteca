@@ -17,7 +17,14 @@ app.use(express.json());
 app.use(cors())
 
 // Conectar ao MongoDB
-connectDB();
+const MONGO_URI = 'mongodb+srv://pguerra872:12345@library.rh7qd.mongodb.net/?retryWrites=true&w=majority&appName=biblioteca_somativa'
+
+mongoose.connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+    .then(() => console.log('Conectado ao MongoDB!'))
+    .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message))
 
 // Rotas
 app.use('/books', booksRoutes); // Rota de livros

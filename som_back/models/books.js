@@ -15,9 +15,12 @@ const bookSchema = new mongoose.Schema({
     },
     image: { 
         type: String, 
-        required: true 
+        required: false
     },
 
 }, { timestamps: true });
 
 module.exports = mongoose.model('Book', bookSchema);
+
+
+
