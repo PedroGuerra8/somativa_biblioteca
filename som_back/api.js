@@ -1,5 +1,10 @@
 const express = require('express');
-const connectDB = require('./config/db')
+require('dotenv').config();
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const multer = require('multer');
+const connectDB = require('./config/db');
 const booksRoutes = require('./routes/books');
 const usersRoutes = require('./routes/user');
 
@@ -8,6 +13,8 @@ const PORT = 5000;
 
 // Middleware para interpretar JSON
 app.use(express.json());
+
+app.use(cors())
 
 // Conectar ao MongoDB
 connectDB();
