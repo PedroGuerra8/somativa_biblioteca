@@ -9,7 +9,7 @@ router.post('/user', authController.register);
 router.post('/user', authController.login);
 
 // GET /user
-router.get('/user', (req, res) => {
+router.get('./user', (req, res) => {
     res.send('Usuário encontrado');
 });
 

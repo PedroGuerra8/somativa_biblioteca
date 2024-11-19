@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Book = require("../models/books")
 
 // Registro do usuário
 exports.register = async (req, res) => {
@@ -34,3 +35,30 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: 'Erro ao realizar login', error });
     }
 };
+
+
+// controllers/bookController.js
+exports.createBook = async (req, res) => {
+    const { title, author, year, image } = req.body;
+
+    if (!title || !author || !year) {
+        console.log('Erro de validação: Título, autor e ano são obrigatórios');
+        return res.status(400).json({ error: 'Título, autor e ano são obrigatórios' });
+    }
+
+    try {
+        console.log('Criando livro:', req.body);  // Log dos dados recebidos
+        const newBook = new Book({ title, author, year, image });
+        await newBook.save();
+        console.log('Livro criado com sucesso:', newBook);
+
+        res.status(201).json({
+            message: 'Livro criado com sucesso!',
+            book: newBook
+        });
+    } catch (error) {
+        console.error('Erro ao salvar livro:', error);
+        res.status(500).json({ error: 'Erro ao salvar livro no banco de dados' });
+    }
+};
+
