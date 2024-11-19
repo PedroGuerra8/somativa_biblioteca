@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const bookSchema = require("../models/books")
+const bookSchema = require("../models/books");
+const books = require('../models/books');
 
 // GET /books
-router.get('/books', async (req, res) => {
-    try {
-        const books = await bookSchema.find();  // Recupera todos os livros do banco
-        res.status(200).json(books);
-    } catch (error) {
-        console.error('Erro ao buscar livros:', error);
-        res.status(500).json({ error: 'Erro ao buscar livros no banco de dados' });
+router.get('/',async(req,res)=>{
+    try{
+        const books = await bookSchema.find(); // busca todos os livros com o metódo find
+        res.status(200).json(books) // retorna a lista de livros
+    }catch(error){
+        res.status(500).json({message: 'Erro ao buscar os livros ',error}) // retorna o erro se houver
     }
-});
-
+    });
 // POST /books
 router.post('/', async (req, res) => {
     const { title, author, year, image } = req.body;
@@ -34,8 +33,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /books/:id
-router.put('/books/:id', async (req, res) => {
-    const { id } = req.params;
+router.put('/:id', async (req, res) => {
     const { title, author, year, image } = req.body;
 
     // Validação dos dados
@@ -44,7 +42,7 @@ router.put('/books/:id', async (req, res) => {
     }
 
     try {
-        const updatedBook = await bookSchema.findByIdAndUpdate(id, { title, author, year, image }, { new: true });
+        const updatedBook = await bookSchema.findByIdAndUpdate(req.params.id,{ title, author, year, image }, { new: true });
         if (!updatedBook) {
             return res.status(404).json({ error: 'Livro não encontrado' });
         }
@@ -56,19 +54,14 @@ router.put('/books/:id', async (req, res) => {
 });
 
 // DELETE /books/:id
-router.delete('/books/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const deletedBook = await bookSchema.findByIdAndDelete(id);
-        if (!deletedBook) {
-            return res.status(404).json({ error: 'Livro não encontrado' });
-        }
-        res.status(200).json({ message: 'Livro deletado com sucesso!', book: deletedBook });
-    } catch (error) {
-        console.error('Erro ao deletar livro:', error);
-        res.status(500).json({ error: 'Erro ao deletar livro no banco de dados' });
+router.delete('/api/books/:id',async(req,res)=>{
+    try{
+        await Book.findByIdAndDelete(req.params.id);
+        res.status(200).json({message:'Livro deletado com sucesso'});
+    }catch(error){
+        res.status(500).json({message:'Erro ao deletar livro',error});
     }
-});
+
+})
 
 module.exports = router;

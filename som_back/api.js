@@ -38,16 +38,6 @@ app.use('/user', usersRoutes);  // Rota de usuários
 app.use(bodyParser.json());
 app.use('uploads', express.static(path.join(__dirname, 'uploads')))
 
-// Endpoint padrão
-app.get('/', (req, res) => {
-    res.send('Bem-vindo à API!');
-});
-
-// POST
-// app.post('/api/books', (req, res) => {
-//     res.send('Cadastrado com sucesso!')
-// })
-
 // Inicia o servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando em: http://localhost:${PORT}/`);
