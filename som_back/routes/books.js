@@ -3,15 +3,17 @@ const router = express.Router();
 const bookSchema = require("../models/books");
 const books = require('../models/books');
 
-// GET /books
-router.get('/',async(req,res)=>{
-    try{
-        const books = await bookSchema.find(); // busca todos os livros com o metódo find
-        res.status(200).json(books) // retorna a lista de livros
-    }catch(error){
-        res.status(500).json({message: 'Erro ao buscar os livros ',error}) // retorna o erro se houver
+// Rota GET para listar todos os livros
+router.get('/', async (req, res) => {
+    try {
+        const books = await bookSchema.find();  // Consulta todos os livros
+        res.status(200).json(books);  // Envia os livros como resposta
+    } catch (error) {
+        console.error('Erro ao buscar livros:', error);
+        res.status(500).json({ message: 'Erro ao buscar os livros', error });
     }
-    });
+});
+
 // POST /books
 router.post('/', async (req, res) => {
     const { title, author, year, image } = req.body;
@@ -36,16 +38,28 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const { title, author, year, image } = req.body;
 
-    // Validação dos dados
-    if (!title || !author || !year) {
-        return res.status(400).json({ error: 'Título, autor e ano são obrigatórios' });
-    }
+    // Criação de um objeto com os campos a serem atualizados
+    const updatedFields = {};
+    
+    // Verificando se cada campo foi enviado e adicionando ao objeto de atualização
+    if (title) updatedFields.title = title;
+    if (author) updatedFields.author = author;
+    if (year) updatedFields.year = year;
+    if (image) updatedFields.image = image;
 
     try {
-        const updatedBook = await bookSchema.findByIdAndUpdate(req.params.id,{ title, author, year, image }, { new: true });
+        const updatedBook = await bookSchema.findByIdAndUpdate(
+            req.params.id,
+            { $set: updatedFields }, // Atualiza somente os campos que foram enviados
+            { new: true }
+        );
+
+        // Caso o livro não seja encontrado
         if (!updatedBook) {
             return res.status(404).json({ error: 'Livro não encontrado' });
         }
+
+        // Retorna o livro atualizado
         res.status(200).json({ message: 'Livro atualizado com sucesso!', book: updatedBook });
     } catch (error) {
         console.error('Erro ao atualizar livro:', error);
@@ -53,15 +67,21 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE /books/:id
-router.delete('/api/books/:id',async(req,res)=>{
-    try{
-        await Book.findByIdAndDelete(req.params.id);
-        res.status(200).json({message:'Livro deletado com sucesso'});
-    }catch(error){
-        res.status(500).json({message:'Erro ao deletar livro',error});
-    }
 
-})
+// DELETE /books/:id
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedBook = await bookSchema.findByIdAndDelete(req.params.id);  // Deleta o livro com o id fornecido
+
+        if (!deletedBook) {
+            return res.status(404).json({ message: 'Livro não encontrado' });  // Caso o livro não exista
+        }
+
+        res.status(200).json({ message: 'Livro deletado com sucesso' });  // Resposta de sucesso
+    } catch (error) {
+        console.error('Erro ao deletar livro:', error);
+        res.status(500).json({ message: 'Erro ao deletar livro', error });  // Em caso de erro no banco de dados
+    }
+});
 
 module.exports = router;

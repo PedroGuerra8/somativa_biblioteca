@@ -9,34 +9,30 @@ const booksRoutes = require('./routes/books');
 const usersRoutes = require('./routes/user');
 const path = require('path')
 
+
+
+const MONGO_URI = process.env.MONGO_URI; // Obtém a string de conexão do .env
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('Conectado ao MongoDB!'))
+  .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message));
+
 const app = express();
-const PORT = 5000;
+const PORT = 4000;
 
 // Middleware para interpretar JSON
 app.use(express.json());
 
 app.use(cors())
 
-
 const authController = require('./controllers/authController')
-
-// Conectar ao MongoDB
-const MONGO_URI = 'mongodb+srv://pguerra872:12345@library.rh7qd.mongodb.net/somativa'
-
-mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-    .then(() => console.log('Conectado ao MongoDB!'))
-    .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message))
 
 // Rotas
 app.use('/api/books', booksRoutes); // Rota de livros
 app.use('/user', usersRoutes);  // Rota de usuários
 
-// Midleware
-app.use(bodyParser.json());
-app.use('uploads', express.static(path.join(__dirname, 'uploads')))
+// Serve arquivos estáticos da pasta 'uploads'
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Inicia o servidor
 app.listen(PORT, () => {
