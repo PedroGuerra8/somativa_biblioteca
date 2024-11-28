@@ -29,26 +29,9 @@ const authController = require('./controllers/authController')
 
 // Rotas
 app.use('/api/books', booksRoutes); // Rota de livros
-app.use('/user', usersRoutes);  // Rota de usuários
-
-// Serve arquivos estáticos da pasta 'uploads'
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/user', usersRoutes);  // Rota de usuários
 
 // Inicia o servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando em: http://localhost:${PORT}/`);
 });
-
-
-// Configuração do multer para uploads das imagens
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // define o diretório onde as imagens serão armazenadas
-    },
-    filename: function (req, file, cb) {
-        // Define o nome do arquivo: uma combinação de timestamp e o nome original
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-
-const uploads = multer({ storage: storage});
